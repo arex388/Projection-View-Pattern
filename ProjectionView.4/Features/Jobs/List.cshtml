@@ -1,0 +1,23 @@
+﻿@model ProjectionView._4.Features.Jobs.List.View
+@{
+}
+<h2>Jobs</h2>
+<table>
+	<caption>
+		<a asp-action="Add" asp-controller="Jobs">Add a Job</a>
+	</caption>
+	<tr>
+		<th>Name</th>
+	</tr>
+	@foreach (var j in Model.Jobs) {
+		<tr>
+			<td>
+				<a asp-action="Edit" asp-controller="Jobs" asp-route-id="@j.Id">@j.Name</a>
+			</td>
+			<td>@j.CsrName</td>
+			<td>@j.StateName</td>
+			<td>@j.StatusName</td>
+			<td>@j.TypeName</td>
+		</tr>
+	}
+</table>

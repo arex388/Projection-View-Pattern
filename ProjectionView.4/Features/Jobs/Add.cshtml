@@ -1,0 +1,31 @@
+﻿@model ProjectionView._4.Features.Jobs.Add.View
+@{
+}
+<h2>Add a Job</h2>
+<form asp-action="Add" method="post">
+	<label asp-for="Job.Name"></label>
+	<input asp-for="Job.Name" />
+	<br />
+	<label asp-for="Job.CsrId">CSR</label>
+	<select asp-for="Job.CsrId" asp-items="Model.CsrsSelectListItems">
+		<option></option>
+	</select>
+	<br />
+	<label asp-for="Job.StateId">State</label>
+	<select asp-for="Job.StateId" asp-items="Model.StatesSelectListItems">
+		<option></option>
+	</select>
+	<br />
+	<label asp-for="Job.StatusId">Status</label>
+	<select asp-for="Job.StatusId" asp-items="Model.StatusesSelectListItems">
+		<option></option>
+	</select>
+	<br />
+	<label asp-for="Job.TypeId">Type</label>
+	<select asp-for="Job.TypeId" asp-items="Model.TypesSelectListItems">
+		<option></option>
+	</select>
+	<br />
+	<br />
+	<button>Save</button>
+</form>

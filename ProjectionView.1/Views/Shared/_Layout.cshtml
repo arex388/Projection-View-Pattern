@@ -1,0 +1,22 @@
+﻿@model ProjectionView._1.ViewBase
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+	<link rel="stylesheet" href="~/styles/default.css" />
+	<title>Projection-View Pattern (1)</title>
+</head>
+<body>
+	<p>Hello <a asp-action="Edit" asp-controller="Employees" asp-route-id="@Model.SignedInEmployee.Id">@Model.SignedInEmployee.Name</a>!</p>
+	<hr />
+	<nav>
+		<a asp-action="Default" asp-controller="Dashboard">Dashboard</a>
+		<a asp-action="List" asp-controller="Jobs">Jobs</a>
+		<a asp-action="List" asp-controller="Employees">Employees</a>
+	</nav>
+	<hr />
+	@RenderBody()
+	<mini-profiler />
+</body>
+</html>

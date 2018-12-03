@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+	<PropertyGroup>
+		<TargetFramework>netcoreapp2.1</TargetFramework>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="8.0.0" />
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.0.0" />
+		<PackageReference Include="MediatR" Version="5.1.0" />
+		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="5.1.0" />
+		<PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.6" />
+		<PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.6" />
+		<PackageReference Include="MiniProfiler.AspNetCore.Mvc" Version="4.0.138" />
+		<PackageReference Include="MiniProfiler.EntityFrameworkCore" Version="4.0.138" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\ProjectionView.Data\ProjectionView.Data.csproj" />
+	</ItemGroup>
+</Project>

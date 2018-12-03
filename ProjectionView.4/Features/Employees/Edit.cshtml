@@ -1,0 +1,16 @@
+﻿@model ProjectionView._4.Features.Employees.Edit.View
+@{
+}
+<h2>@Model.Employee.Name</h2>
+<table>
+	<tr>
+		<th>Name</th>
+	</tr>
+	@foreach (var j in Model.Jobs) {
+		<tr>
+			<td>
+				<a asp-action="Edit" asp-controller="Jobs" asp-route-id="@j.Id">@j.Name</a>
+			</td>
+		</tr>
+	}
+</table>
