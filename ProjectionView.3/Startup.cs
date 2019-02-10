@@ -1,9 +1,9 @@
-﻿using AutoMapper;
+﻿using Arex388.AspNetCore.Mvc.Razor;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
@@ -37,15 +37,11 @@ namespace ProjectionView._3 {
 					o.UseSqlServer(Configuration.GetConnectionString("DevelopmentConnection"));
 				});
 			services.AddMiniProfiler().AddEntityFramework();
+			services.AddFeatures();
 
 			services.Configure<KestrelServerOptions>(
 				o => {
 					o.AddServerHeader = false;
-				});
-			services.Configure<RazorViewEngineOptions>(
-				o => {
-					o.ViewLocationExpanders.Clear();
-					o.ViewLocationExpanders.Add(new FeaturesViewLocationExpander());
 				});
 			services.Configure<RouteOptions>(
 				o => {
