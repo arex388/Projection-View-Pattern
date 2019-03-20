@@ -1,4 +1,4 @@
-﻿using Arex388.AspNetCore.Mvc.Razor;
+﻿using Arex388.AspNetCore;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
