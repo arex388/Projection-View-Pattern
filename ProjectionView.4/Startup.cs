@@ -37,7 +37,10 @@ namespace ProjectionView._4 {
 					o.UseSqlServer(Configuration.GetConnectionString("DevelopmentConnection"));
 				});
 			services.AddMiniProfiler().AddEntityFramework();
-			services.AddFeatures();
+			services.AddArex388(
+				o => {
+					o.UseFeatures = true;
+				});
 
 			services.Configure<KestrelServerOptions>(
 				o => {
