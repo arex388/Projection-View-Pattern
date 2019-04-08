@@ -7,8 +7,6 @@ namespace ProjectionView._4 {
 		protected IMediator Mediator { get; }
 
 		protected ControllerBase(
-			IMediator mediator) {
-			Mediator = mediator;
-		}
+			IMediator mediator) => Mediator = mediator;
 	}
 }

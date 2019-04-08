@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -20,15 +22,16 @@ namespace ProjectionView._3.Features.Jobs {
 		}
 
 		public sealed class CommandHandler :
-			HandlerBase<Command, bool> {
+			AsyncHandlerBase<Command, bool> {
 			public CommandHandler(
 				ProjectionViewContext context,
 				IMapper mapper)
 				: base(context, mapper) {
 			}
 
-			protected override bool Handle(
-				Command command) {
+			public override async Task<bool> Handle(
+				Command command,
+				CancellationToken cancellationToken = default) {
 				var job = Context.Jobs.SingleOrDefault(
 					j => j.Id == command.Id);
 
@@ -38,7 +41,7 @@ namespace ProjectionView._3.Features.Jobs {
 
 				Mapper.Map(command, job);
 
-				Context.SaveChanges();
+				await Context.SaveChangesAsync(cancellationToken);
 
 				return true;
 			}
@@ -50,15 +53,16 @@ namespace ProjectionView._3.Features.Jobs {
 		}
 
 		public sealed class QueryHandler :
-			HandlerBase<Query, View> {
+			AsyncHandlerBase<Query, View> {
 			public QueryHandler(
 				ProjectionViewContext context,
 				IMapper mapper)
 				: base(context, mapper) {
 			}
 
-			protected override View Handle(
-				Query query) {
+			public override Task<View> Handle(
+				Query query,
+				CancellationToken cancellationToken = default) {
 				var countries = Context.Countries.OrderByDescending(
 					c => c.Name).ProjectTo<SelectListGroup>(MapperConfig).Future();
 				var csrs = Context.Employees.Where(
@@ -79,14 +83,14 @@ namespace ProjectionView._3.Features.Jobs {
 						countries
 					}).Future();
 
-				return new View {
+				return Task.FromResult(new View {
 					CsrsSelectListItems = csrs.ToList(),
 					Job = job.Value,
 					SignedInEmployee = signedInEmployee.Value,
 					StatesSelectListItems = statesSelectListItems.ToList(),
 					StatusesSelectListItems = statusesSelectListItems.ToList(),
 					TypesSelectListItems = typesSelectListItems.ToList()
-				};
+				});
 			}
 		}
 

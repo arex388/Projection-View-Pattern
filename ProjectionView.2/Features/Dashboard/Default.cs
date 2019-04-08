@@ -1,6 +1,9 @@
 ﻿using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using ProjectionView.Data;
 
 namespace ProjectionView._2.Features.Dashboard {
@@ -10,20 +13,21 @@ namespace ProjectionView._2.Features.Dashboard {
 		}
 
 		public sealed class QueryHandler :
-			HandlerBase<Query, View> {
+			AsyncHandlerBase<Query, View> {
 			public QueryHandler(
 				ProjectionViewContext context,
 				IMapper mapper)
 				: base(context, mapper) {
 			}
 
-			protected override View Handle(
-				Query query) {
+			public override async Task<View> Handle(
+				Query query,
+				CancellationToken cancellationToken = default) {
 				return new View {
-					EmployeesCount = Context.Employees.Count(
-						e => e.IsActive),
-					JobsCount = Context.Jobs.Count(),
-					SignedInEmployee = GetSignedInEmployee()
+					EmployeesCount = await Context.Employees.CountAsync(
+						e => e.IsActive, cancellationToken),
+					JobsCount = await Context.Jobs.CountAsync(cancellationToken),
+					SignedInEmployee = await GetSignedInEmployeeAsync(cancellationToken)
 				};
 			}
 		}

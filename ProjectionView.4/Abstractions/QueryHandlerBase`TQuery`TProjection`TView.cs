@@ -8,7 +8,7 @@ using Z.EntityFramework.Plus;
 
 namespace ProjectionView._4 {
 	public abstract class QueryHandlerBase<TQuery, TProjection, TView> :
-		HandlerBase<TQuery, TView>
+		AsyncProjectionHandlerBase<TQuery, TProjection, TView>
 		where TQuery : IRequest<TView>
 		where TProjection : ProjectionBase, new()
 		where TView : ViewBase {
@@ -18,12 +18,7 @@ namespace ProjectionView._4 {
 			: base(context, mapper) {
 		}
 
-		protected override TView Handle(
-			TQuery query) {
-			return GetView(query);
-		}
-
-		protected virtual TProjection GetProjection(
+		protected override TProjection GetProjection(
 			TQuery query) {
 			var id = new Random().Next(1, 10);
 
@@ -31,21 +26,6 @@ namespace ProjectionView._4 {
 				SignedInEmployee = Context.Employees.Where(
 					e => e.Id == id).ProjectTo<SignedInEmployeeProjectionView>(MapperConfig).DeferredSingle().FutureValue()
 			};
-		}
-
-		protected virtual TView GetView(
-			TQuery query) {
-			var projection = GetProjection(query);
-			var view = Mapper.Map<TView>(projection);
-
-			Normalize(projection, view);
-
-			return view;
-		}
-
-		protected virtual void Normalize(
-			TProjection projection,
-			TView view) {
 		}
 	}
 }

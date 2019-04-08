@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using ProjectionView.Data;
 
 namespace ProjectionView._2.Features.Jobs {
@@ -12,18 +14,19 @@ namespace ProjectionView._2.Features.Jobs {
 		}
 
 		public sealed class QueryHandler :
-			HandlerBase<Query, View> {
+			AsyncHandlerBase<Query, View> {
 			public QueryHandler(
 				ProjectionViewContext context,
 				IMapper mapper)
 				: base(context, mapper) {
 			}
 
-			protected override View Handle(
-				Query query) {
+			public override async Task<View> Handle(
+				Query query,
+				CancellationToken cancellationToken = default) {
 				return new View {
-					Jobs = Context.Jobs.ProjectTo<JobProjection>(MapperConfig).ToList(),
-					SignedInEmployee = GetSignedInEmployee()
+					Jobs = await Context.Jobs.ProjectTo<JobProjection>(MapperConfig).ToListAsync(cancellationToken),
+					SignedInEmployee = await GetSignedInEmployeeAsync(cancellationToken)
 				};
 			}
 		}

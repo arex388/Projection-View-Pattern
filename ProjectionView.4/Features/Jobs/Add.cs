@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -19,19 +21,21 @@ namespace ProjectionView._4.Features.Jobs {
 		}
 
 		public sealed class CommandHandler :
-			HandlerBase<Command, int> {
+			AsyncHandlerBase<Command, int> {
 			public CommandHandler(
 				ProjectionViewContext context,
 				IMapper mapper)
 				: base(context, mapper) {
 			}
 
-			protected override int Handle(
-				Command command) {
+			public override async Task<int> Handle(
+				Command command,
+				CancellationToken cancellationToken = default) {
 				var job = Mapper.Map<Job>(command);
 
 				Context.Add(job);
-				Context.SaveChanges();
+
+				await Context.SaveChangesAsync(cancellationToken);
 
 				return job.Id;
 			}

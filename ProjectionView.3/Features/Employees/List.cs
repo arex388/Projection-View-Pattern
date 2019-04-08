@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -13,22 +15,23 @@ namespace ProjectionView._3.Features.Employees {
 		}
 
 		public sealed class QueryHandler :
-			HandlerBase<Query, View> {
+			AsyncHandlerBase<Query, View> {
 			public QueryHandler(
 				ProjectionViewContext context,
 				IMapper mapper)
 				: base(context, mapper) {
 			}
 
-			protected override View Handle(
-				Query query) {
+			public override Task<View> Handle(
+				Query query,
+				CancellationToken cancellationToken = default) {
 				var employees = Context.Employees.ProjectTo<EmployeeProjection>(MapperConfig).Future();
 				var signedInEmployee = GetSignedInEmployee();
 
-				return new View {
+				return Task.FromResult(new View {
 					Employees = employees.ToList(),
 					SignedInEmployee = signedInEmployee.Value
-				};
+				});
 			}
 		}
 

@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using ProjectionView.Data;
 
 namespace ProjectionView._2.Features.Jobs {
@@ -19,15 +22,16 @@ namespace ProjectionView._2.Features.Jobs {
 		}
 
 		public sealed class CommandHandler :
-			HandlerBase<Command, bool> {
+			AsyncHandlerBase<Command, bool> {
 			public CommandHandler(
 				ProjectionViewContext context,
 				IMapper mapper)
 				: base(context, mapper) {
 			}
 
-			protected override bool Handle(
-				Command command) {
+			public override async Task<bool> Handle(
+				Command command,
+				CancellationToken cancellationToken = default) {
 				var job = Context.Jobs.SingleOrDefault(
 					j => j.Id == command.Id);
 
@@ -37,7 +41,7 @@ namespace ProjectionView._2.Features.Jobs {
 
 				Mapper.Map(command, job);
 
-				Context.SaveChanges();
+				await Context.SaveChangesAsync(cancellationToken);
 
 				return true;
 			}
@@ -49,36 +53,37 @@ namespace ProjectionView._2.Features.Jobs {
 		}
 
 		public sealed class QueryHandler :
-			HandlerBase<Query, View> {
+			AsyncHandlerBase<Query, View> {
 			public QueryHandler(
 				ProjectionViewContext context,
 				IMapper mapper)
 				: base(context, mapper) {
 			}
 
-			protected override View Handle(
-				Query query) {
-				var countries = Context.Countries.OrderByDescending(
-					c => c.Name).ProjectTo<SelectListGroup>(MapperConfig).ToList();
+			public override async Task<View> Handle(
+				Query query,
+				CancellationToken cancellationToken = default) {
+				var countries = await Context.Countries.OrderByDescending(
+					c => c.Name).ProjectTo<SelectListGroup>(MapperConfig).ToListAsync(cancellationToken);
 
 				return new View {
-					CsrsSelectListItems = Context.Employees.Where(
+					CsrsSelectListItems = await Context.Employees.Where(
 						e => e.IsActive).OrderBy(
-						e => e.Name).ProjectTo<SelectListItem>(MapperConfig).ToList(),
-					Job = Context.Jobs.Where(
-						j => j.Id == query.Id).ProjectTo<Command>(MapperConfig).Single(),
-					SignedInEmployee = GetSignedInEmployee(),
-					StatesSelectListItems = Context.States.Where(
+						e => e.Name).ProjectTo<SelectListItem>(MapperConfig).ToListAsync(cancellationToken),
+					Job = await Context.Jobs.Where(
+						j => j.Id == query.Id).ProjectTo<Command>(MapperConfig).SingleAsync(cancellationToken),
+					SignedInEmployee = await GetSignedInEmployeeAsync(cancellationToken),
+					StatesSelectListItems = await Context.States.Where(
 						s => s.IsActive).OrderBy(
 						s => s.Name).ProjectTo<SelectListItem>(MapperConfig, new {
 							countries
-						}).ToList(),
-					StatusesSelectListItems = Context.Statuses.Where(
+						}).ToListAsync(cancellationToken),
+					StatusesSelectListItems = await Context.Statuses.Where(
 						s => s.IsActive).OrderBy(
-						s => s.Name).ProjectTo<SelectListItem>(MapperConfig).ToList(),
-					TypesSelectListItems = Context.Types.Where(
+						s => s.Name).ProjectTo<SelectListItem>(MapperConfig).ToListAsync(cancellationToken),
+					TypesSelectListItems = await Context.Types.Where(
 						t => t.IsActive).OrderBy(
-						t => t.Name).ProjectTo<SelectListItem>(MapperConfig).ToList()
+						t => t.Name).ProjectTo<SelectListItem>(MapperConfig).ToListAsync(cancellationToken)
 				};
 			}
 		}
